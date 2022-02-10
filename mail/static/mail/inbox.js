@@ -171,7 +171,6 @@ function build_email(data) {
   reply_button.classList = "btn btn-outline-primary m-2";
   reply_button.addEventListener("click", () => compose_reply(data));
   
-
   document.querySelector("#email-view").appendChild(sender);
   document.querySelector("#email-view").appendChild(recipients);
   document.querySelector("#email-view").appendChild(subject);
@@ -180,4 +179,23 @@ function build_email(data) {
   document.querySelector("#email-view").appendChild(reply_button);
   document.querySelector("#email-view").appendChild(document.createElement("hr"));
   document.querySelector("#email-view").appendChild(body);
+}
+
+function archive_email(data) {
+  fetch(`/emails/${data["id"]}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+        archived: !data["archived"]
+    })
+  });
+}
+
+function compose_reply(data) {
+    document.querySelector('#emails-view').style.display = 'none';
+    document.querySelector("#email-view").style.display = "none";
+    document.querySelector('#compose-view').style.display = 'block';
+  
+    document.querySelector('#compose-recipients').value = data["sender"];
+    document.querySelector('#compose-subject').value = ((data["subject"].match(/^(Re:)\s/)) ? data["subject"] : "Re: " + data["subject"]);
+    document.querySelector('#compose-body').value = `On ${data["timestamp"]} ${data["sender"]} wrote:\n${data["body"]}\n-------------------------------------\n`;
 }
